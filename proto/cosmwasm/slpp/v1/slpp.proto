@@ -9,14 +9,14 @@ service Msg {
 
 // AVS represents the state-ful information stored per AVS
 message AVS {
-  repeated byte contract_bin = 1;
+  repeated bytes contract_bin = 1;
 	uint64 id = 2;
 	string sidecar_docker_image = 3;
 }
 
 // MsgRegisterAVS defines a message-type handled by the x/slpp module for ingressing a new AVS.
 message MsgRegisterAVS {
-	repeated byte contract_bin = 1;
+	repeated bytes contract_bin = 1;
 	string sidecar_docker_image = 2;
 }
 
