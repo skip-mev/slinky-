@@ -45,6 +45,12 @@ AVS represents the state-ful information stored per AVS
 MsgRegisterAVS defines a message-type handled by the x/slpp module for ingressing a new AVS.
 
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `contract_address` | [string](#string) |  |  |
+| `sidecar_docker_image` | [string](#string) |  |  |
+
+
 
 
 
@@ -53,6 +59,11 @@ MsgRegisterAVS defines a message-type handled by the x/slpp module for ingressin
 
 ### MsgRegisterAVSResponse
 MsgRegisterAVSResponse defines the Msg/RegisterAVS response
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [uint64](#uint64) |  |  |
 
 
 
