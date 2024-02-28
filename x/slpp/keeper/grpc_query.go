@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/CosmWasm/wasmd/x/slpp/types"
 )
@@ -16,7 +17,18 @@ func NewQueryServer(keeper Keeper) types.QueryServer {
 	return &queryServer{keeper: keeper}
 }
 
-// GetAVS implements types.QueryServer.
-func (q *queryServer) GetAVS(context.Context, *types.GetAVSRequest) (*types.GetAVSResponse, error) {
-	panic("unimplemented")
+// GetAVS returns the AVS with the given id
+func (q *queryServer) GetAVS(ctx context.Context, req *types.GetAVSRequest) (*types.GetAVSResponse, error) {
+	if req == nil {
+		return nil, fmt.Errorf("request cannot be nil")
+	}
+
+	avs, err := q.keeper.GetAVS(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.GetAVSResponse{
+		Avs: avs,
+	}, nil
 }
