@@ -25,6 +25,7 @@ func (m *msgServer) RegisterAVS(ctx context.Context, req *types.MsgRegisterAVS) 
 		return nil, fmt.Errorf("message cannot be empty")
 	}
 
+	// dennis does everything
 	id, err := m.keeper.RegisterAVS(ctx, req)
 	if err != nil {
 		return nil, err
