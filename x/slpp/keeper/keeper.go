@@ -132,7 +132,6 @@ func (k *Keeper) RegisterAVS(ctx sdk.Context, m *types.MsgRegisterAVS) (uint64, 
 	})
 	instantiateContractResponse, err := k.wasmMsgServer.InstantiateContract(ctx, &wasmtypes.MsgInstantiateContract{
 		Sender: m.Sender,
-		Admin:  m.Sender,
 		CodeID: storeCodeResponse.CodeID,
 		Msg:    m.InstantiateMsg,
 	})
