@@ -23,7 +23,7 @@ func NewExtendVoteHandler(oc MultiOracleClient, k abci.SLPPKeeper) sdk.ExtendVot
 			AvsData: make(map[uint64][]byte),
 		}
 
-		avses, err := k.GetAllAVSes(ctx)
+		avses, err := k.GetAllAVSIDs(ctx)
 		if err != nil {
 			ctx.Logger().Error(
 				"failed to get all AVSes",
@@ -35,7 +35,7 @@ func NewExtendVoteHandler(oc MultiOracleClient, k abci.SLPPKeeper) sdk.ExtendVot
 		}
 
 		for _, avs := range avses {
-			veData, err := oc.VoteExtensionData(ctx, avs.Id, &service.VoteExtensionDataRequest{})
+			veData, err := oc.VoteExtensionData(ctx, avs, &service.VoteExtensionDataRequest{})
 			if err != nil {
 				ctx.Logger().Error(
 					"failed to get vote extension data",
@@ -43,7 +43,7 @@ func NewExtendVoteHandler(oc MultiOracleClient, k abci.SLPPKeeper) sdk.ExtendVot
 				)
 			}
 
-			ext.AvsData[avs.Id] = veData.Data
+			ext.AvsData[avs] = veData.Data
 		}
 
 		extBytes, err := ext.Marshal()
