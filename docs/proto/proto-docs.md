@@ -33,7 +33,7 @@ AVS represents the state-ful information stored per AVS
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `contract_bin` | [bytes](#bytes) | repeated |  |
+| `contract_bin` | [bytes](#bytes) |  |  |
 | `id` | [uint64](#uint64) |  |  |
 | `sidecar_docker_image` | [string](#string) |  |  |
 
@@ -80,7 +80,7 @@ MsgRegisterAVS defines a message-type handled by the x/slpp module for ingressin
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `contract_bin` | [bytes](#bytes) | repeated |  |
+| `contract_bin` | [bytes](#bytes) |  |  |
 | `sidecar_docker_image` | [string](#string) |  |  |
 
 
