@@ -85,11 +85,11 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 type AppModule struct {
 	AppModuleBasic
 
-	k keeper.Keeper
+	k *keeper.Keeper
 }
 
 // NewAppModule returns an application module for the x/alerts module.
-func NewAppModule(k keeper.Keeper) AppModule {
+func NewAppModule(k *keeper.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		k: k,

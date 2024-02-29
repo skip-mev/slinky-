@@ -8,6 +8,8 @@ SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 BINDIR ?= $(GOPATH)/bin
 SIMAPP = ./app
 HOMEDIR = $(shell pwd)/.wasmd
+GENESIS = $(HOMEDIR)/config/genesis.json
+GENESIS_TMP = $(HOMEDIR)/config/genesis_tmp.json
 # for dockerized protobuf tools
 DOCKER := $(shell which docker)
 BUF_IMAGE=bufbuild/buf@sha256:3cb1f8a4b48bd5ad8f09168f10f607ddc318af202f5c057d52a45216793d85e5 #v1.4.0
@@ -203,9 +205,12 @@ build-app:
 	./build/wasmd init validator --chain-id skip-1 --home $(HOMEDIR)
 	./build/wasmd keys add validator --home $(HOMEDIR) --keyring-backend test
 	./build/wasmd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
-	./build/wasmd genesis add-genesis-account cosmos1see0htr47uapjvcvh0hu6385rp8lw3em24hysg 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
 	./build/wasmd genesis gentx validator 1000000000stake --chain-id skip-1 --home $(HOMEDIR) --keyring-backend test
 	./build/wasmd genesis collect-gentxs --home $(HOMEDIR)
+		jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
+
+start-app:
+	./build/wasmd start --home $(HOMEDIR)
 
 .PHONY: all install install-debug \
 	go-mod-cache draw-deps clean build format \

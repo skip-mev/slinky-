@@ -10,6 +10,8 @@ import (
 	ve "github.com/CosmWasm/wasmd/x/slpp/vote_extensions"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 type VEWithVotingPower struct {
@@ -153,6 +155,7 @@ func generateMsgsFromVoteExtensions(ctx sdk.Context, k abci.SLPPKeeper, ves []VE
 		msgs = append(msgs, &wasmtypes.MsgSudoContract{
 			Contract: avs.ContractAddress,
 			Msg: payload,
+			Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		})
 	}
 

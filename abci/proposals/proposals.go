@@ -63,9 +63,17 @@ func (ph ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 			"height", req.Height,
 		)
 
-		return &cmtabci.ResponsePrepareProposal{
-			Txs: [][]byte{extCommitInfoBz},
-		}, nil
+		res := &cmtabci.ResponsePrepareProposal{
+			Txs: append([][]byte{extCommitInfoBz}, req.Txs...),
+		}
+
+		ctx.Logger().Info(
+			"prepared proposal",
+			"height", req.Height,
+			"txs", len(res.Txs),
+		)
+
+		return res, nil
 	}
 }
 
@@ -83,7 +91,7 @@ func (ph ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 		}
 
 		// check that the extended commit is in state
-		if len(req.Txs) <= abci.InjectedTxs {
+		if len(req.Txs) < abci.InjectedTxs {
 			ctx.Logger().Error(
 				"no extended-commit found in the block",
 			)

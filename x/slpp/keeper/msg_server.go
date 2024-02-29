@@ -9,11 +9,11 @@ import (
 )
 
 type msgServer struct {
-	keeper Keeper
+	keeper *Keeper
 }
 
 // NewMsgServer returns the default implementation of the x/slpp message service.
-func NewMsgServer(k Keeper) types.MsgServer {
+func NewMsgServer(k *Keeper) types.MsgServer {
 	return &msgServer{
 		keeper: k,
 	}
@@ -25,7 +25,9 @@ func (m *msgServer) RegisterAVS(ctx context.Context, req *types.MsgRegisterAVS) 
 		return nil, fmt.Errorf("message cannot be empty")
 	}
 
+	
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx.Logger().Info("registering AVS", "req", req.Sender)
 	id, err := m.keeper.RegisterAVS(sdkCtx, req)
 	if err != nil {
 		return nil, err
@@ -35,3 +37,4 @@ func (m *msgServer) RegisterAVS(ctx context.Context, req *types.MsgRegisterAVS) 
 		Id: id,
 	}, nil
 }
+ 

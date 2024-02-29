@@ -766,7 +766,7 @@ func NewWasmApp(
 		ibctm.AppModule{},
 		// sdk
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)), // always be last to make sure that it checks for all invariants and not only part of them
-		slpp.NewAppModule(*app.SLPPKeeper),
+		slpp.NewAppModule(app.SLPPKeeper),
 	)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
