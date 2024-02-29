@@ -83,6 +83,7 @@ MsgRegisterAVS defines a message-type handled by the x/slpp module for ingressin
 | `contract_bin` | [bytes](#bytes) |  |  |
 | `sidecar_docker_image` | [string](#string) |  |  |
 | `sender` | [string](#string) |  |  |
+| `instantiate_msg` | [bytes](#bytes) |  | Msg json encoded message to be passed to the contract on instantiation |
 
 
 

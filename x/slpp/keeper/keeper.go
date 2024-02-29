@@ -134,6 +134,7 @@ func (k *Keeper) RegisterAVS(ctx sdk.Context, m *types.MsgRegisterAVS) (uint64, 
 		Sender: m.Sender,
 		Admin:  m.Sender,
 		CodeID: storeCodeResponse.CodeID,
+		Msg:    m.InstantiateMsg,
 	})
 
 	state := types.AVS{

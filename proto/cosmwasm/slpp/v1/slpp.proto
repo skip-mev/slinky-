@@ -21,7 +21,8 @@ message MsgRegisterAVS {
   bytes contract_bin = 1;
   string sidecar_docker_image = 2;
   string sender = 3;
-
+  // Msg json encoded message to be passed to the contract on instantiation
+  bytes instantiate_msg = 4;
 }
 
 // MsgRegisterAVSResponse defines the Msg/RegisterAVS response
