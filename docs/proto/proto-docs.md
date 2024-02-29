@@ -33,7 +33,7 @@ AVS represents the state-ful information stored per AVS
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `contract_bin` | [bytes](#bytes) |  |  |
+| `contract_address` | [string](#string) |  |  |
 | `id` | [uint64](#uint64) |  |  |
 | `sidecar_docker_image` | [string](#string) |  |  |
 

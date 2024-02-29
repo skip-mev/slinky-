@@ -116,14 +116,14 @@ func (k *Keeper) NextAVSID(ctx sdk.Context) (uint64, error) {
 	return k.nextAVSID.Peek(ctx)
 }
 
-func (k *Keeper) RegisterAVS(ctx sdk.Context, m types.MsgRegisterAVS) error {
+func (k *Keeper) RegisterAVS(ctx sdk.Context, m *types.MsgRegisterAVS) (uint64, error) {
 	if k.HasAVSContract(ctx, m.GetContractBin()) {
-		return types.NewAVSContractAlreadyExistsError(hex.EncodeToString(m.GetContractBin()))
+		return 0, types.NewAVSContractAlreadyExistsError(hex.EncodeToString(m.GetContractBin()))
 	}
 
 	id, err := k.nextAVSID.Next(ctx)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	storeCodeResponse, err := k.wasmMsgServer.StoreCode(ctx, &wasmtypes.MsgStoreCode{
@@ -141,16 +141,16 @@ func (k *Keeper) RegisterAVS(ctx sdk.Context, m types.MsgRegisterAVS) error {
 		Id:                 id,
 		SidecarDockerImage: m.SidecarDockerImage,
 	}
-	return k.avsMap.Set(ctx, hex.EncodeToString(crypto.Sha256(m.GetContractBin())), state)
+	return id, k.avsMap.Set(ctx, hex.EncodeToString(crypto.Sha256(m.GetContractBin())), state)
 }
 
 func (k *Keeper) GetIDForAVSContract(ctx sdk.Context, contractBytes []byte) (uint64, bool) {
-	cps, err := k.avsMap.Get(ctx, hex.EncodeToString(crypto.Sha256(contractBytes)))
+	avs, err := k.avsMap.Get(ctx, hex.EncodeToString(crypto.Sha256(contractBytes)))
 	if err != nil {
 		return 0, false
 	}
 
-	return cps.Id, true
+	return avs.Id, true
 }
 
 func (k *Keeper) GetAVSByID(ctx sdk.Context, id uint64) (types.AVS, bool) {
@@ -165,12 +165,12 @@ func (k *Keeper) GetAVSByID(ctx sdk.Context, id uint64) (types.AVS, bool) {
 		return types.AVS{}, false
 	}
 
-	cps, err := ids.PrimaryKey()
+	contractHash, err := ids.PrimaryKey()
 	if err != nil {
 		return types.AVS{}, false
 	}
 
-	avs, err := k.avsMap.Get(ctx, cps)
+	avs, err := k.avsMap.Get(ctx, contractHash)
 	if err != nil {
 		return types.AVS{}, false
 	}
@@ -179,7 +179,7 @@ func (k *Keeper) GetAVSByID(ctx sdk.Context, id uint64) (types.AVS, bool) {
 }
 
 func (k *Keeper) GetAllAVSIDs(ctx sdk.Context) ([]uint64, error) {
-	cps := make([]uint64, 0)
+	ids := make([]uint64, 0)
 
 	it, err := k.idIndex.Iterate(ctx, nil)
 	if err != nil {
@@ -193,7 +193,7 @@ func (k *Keeper) GetAllAVSIDs(ctx sdk.Context) ([]uint64, error) {
 			return nil, err
 		}
 
-		cps = append(cps, keyPair.K1())
+		ids = append(ids, keyPair.K1())
 	}
-	return cps, nil
+	return ids, nil
 }
