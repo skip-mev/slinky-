@@ -1,0 +1,11 @@
+syntax = "proto3";
+package cosmwasm.slpp.v1;
+
+option go_package = "github.com/CosmWasm/wasmd/x/slpp/vote_extensions";
+
+// VoteExtensions represents the data that each validator will be extending their votes with.
+// This is a map[avs-id]avs-data, where the avs-data per id is interpreted by the aggregation contract
+// for the avs.
+message VoteExtension {
+    map<uint64, bytes> avs_data = 1;
+}
