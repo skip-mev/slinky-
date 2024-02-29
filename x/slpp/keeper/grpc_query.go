@@ -9,11 +9,11 @@ import (
 
 // queryServer is the default implementation of the x/slpp QueryService.
 type queryServer struct {
-	keeper Keeper
+	keeper *Keeper
 }
 
 // NewQueryServer creates a new x/slpp QueryServer
-func NewQueryServer(keeper Keeper) types.QueryServer {
+func NewQueryServer(keeper *Keeper) types.QueryServer {
 	return &queryServer{keeper: keeper}
 }
 
