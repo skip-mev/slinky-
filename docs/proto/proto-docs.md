@@ -6,10 +6,13 @@
 
 - [cosmwasm/slpp/v1/slpp.proto](#cosmwasm/slpp/v1/slpp.proto)
     - [AVS](#cosmwasm.slpp.v1.AVS)
+    - [GetAVSRequest](#cosmwasm.slpp.v1.GetAVSRequest)
+    - [GetAVSResponse](#cosmwasm.slpp.v1.GetAVSResponse)
     - [MsgRegisterAVS](#cosmwasm.slpp.v1.MsgRegisterAVS)
     - [MsgRegisterAVSResponse](#cosmwasm.slpp.v1.MsgRegisterAVSResponse)
   
     - [Msg](#cosmwasm.slpp.v1.Msg)
+    - [Query](#cosmwasm.slpp.v1.Query)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -33,6 +36,36 @@ AVS represents the state-ful information stored per AVS
 | `contract_bin` | [bytes](#bytes) |  |  |
 | `id` | [uint64](#uint64) |  |  |
 | `sidecar_docker_image` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="cosmwasm.slpp.v1.GetAVSRequest"></a>
+
+### GetAVSRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="cosmwasm.slpp.v1.GetAVSResponse"></a>
+
+### GetAVSResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `avs` | [AVS](#cosmwasm.slpp.v1.AVS) |  |  |
 
 
 
@@ -84,6 +117,16 @@ MsgRegisterAVSResponse defines the Msg/RegisterAVS response
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `RegisterAVS` | [MsgRegisterAVS](#cosmwasm.slpp.v1.MsgRegisterAVS) | [MsgRegisterAVSResponse](#cosmwasm.slpp.v1.MsgRegisterAVSResponse) |  | |
+
+
+<a name="cosmwasm.slpp.v1.Query"></a>
+
+### Query
+Query is the query service for the x/slpp module.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `GetAVS` | [GetAVSRequest](#cosmwasm.slpp.v1.GetAVSRequest) | [GetAVSResponse](#cosmwasm.slpp.v1.GetAVSResponse) |  | GET|/slpp/v1/get_avs/{id}|
 
  <!-- end services -->
 

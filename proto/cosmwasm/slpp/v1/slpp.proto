@@ -1,6 +1,8 @@
 syntax = "proto3";
 package cosmwasm.slpp.v1;
 
+import "google/api/annotations.proto";
+
 option go_package = "github.com/CosmWasm/wasmd/x/slpp/types";
 
 service Msg {
@@ -23,4 +25,19 @@ message MsgRegisterAVS {
 // MsgRegisterAVSResponse defines the Msg/RegisterAVS response
 message MsgRegisterAVSResponse {
   uint64 id = 1;
+}
+
+// Query is the query service for the x/slpp module.
+service Query {
+  rpc GetAVS(GetAVSRequest) returns (GetAVSResponse) {
+    option (google.api.http).get = "/slpp/v1/get_avs/{id}";
+  }
+}
+
+message GetAVSRequest {
+  uint64 id = 1;
+}
+
+message GetAVSResponse {
+  AVS avs = 1;
 }
