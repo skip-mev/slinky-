@@ -1,8 +1,11 @@
 package app
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	voteextensions "github.com/CosmWasm/wasmd/abci/vote_extensions"
+	"github.com/CosmWasm/wasmd/service/clients/oracle"
 	"io"
 	"os"
 	"path/filepath"
@@ -244,6 +247,8 @@ type WasmApp struct {
 	// module configurator
 	configurator module.Configurator
 	once         sync.Once
+
+	multiOracleClient voteextensions.MultiOracleClient
 }
 
 // NewWasmApp returns a reference to an initialized WasmApp.
@@ -345,6 +350,19 @@ func NewWasmApp(
 		keys:              keys,
 		tkeys:             tkeys,
 		memKeys:           memKeys,
+	}
+
+	app.multiOracleClient, err = oracle.NewMultiOracleClientFromConfig(
+		context.Background(),
+		[]oracle.OracleClientConfig{
+			{
+				AVSID:         0,
+				OracleAddress: "0.0.0.0:8080",
+			},
+		},
+	)
+	if err != nil {
+		panic(err)
 	}
 
 	app.ParamsKeeper = initParamsKeeper(
