@@ -26,7 +26,6 @@ func (m *msgServer) RegisterAVS(ctx context.Context, req *types.MsgRegisterAVS) 
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	// dennis does everything
 	id, err := m.keeper.RegisterAVS(sdkCtx, req)
 	if err != nil {
 		return nil, err

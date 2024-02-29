@@ -154,29 +154,29 @@ func (k *Keeper) GetIDForAVSContract(ctx sdk.Context, contractBytes []byte) (uin
 	return avs.Id, true
 }
 
-func (k *Keeper) GetAVSByID(ctx sdk.Context, id uint64) (types.AVS, bool) {
+func (k *Keeper) GetAVSByID(ctx sdk.Context, id uint64) (*types.AVS, bool) {
 	// use the ID index to match the given ID
 	ids, err := k.idIndex.MatchExact(ctx, id)
 	if err != nil {
-		return types.AVS{}, false
+		return nil, false
 	}
 	// close the iterator
 	defer ids.Close()
 	if !ids.Valid() {
-		return types.AVS{}, false
+		return nil, false
 	}
 
 	contractHash, err := ids.PrimaryKey()
 	if err != nil {
-		return types.AVS{}, false
+		return nil, false
 	}
 
 	avs, err := k.avsMap.Get(ctx, contractHash)
 	if err != nil {
-		return types.AVS{}, false
+		return nil, false
 	}
 
-	return avs, true
+	return &avs, true
 }
 
 func (k *Keeper) GetAllAVSIDs(ctx sdk.Context) ([]uint64, error) {
