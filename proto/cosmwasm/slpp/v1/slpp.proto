@@ -20,6 +20,8 @@ message AVS {
 message MsgRegisterAVS {
   bytes contract_bin = 1;
   string sidecar_docker_image = 2;
+  string sender = 3;
+
 }
 
 // MsgRegisterAVSResponse defines the Msg/RegisterAVS response

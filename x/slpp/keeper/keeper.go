@@ -116,9 +116,9 @@ func (k *Keeper) NextAVSID(ctx sdk.Context) (uint64, error) {
 	return k.nextAVSID.Peek(ctx)
 }
 
-func (k *Keeper) RegisterAVS(ctx sdk.Context, cp types.MsgRegisterAVS) error {
-	if k.HasAVSContract(ctx, cp.GetContractBin()) {
-		return types.NewAVSContractAlreadyExistsError(hex.EncodeToString(cp.GetContractBin()))
+func (k *Keeper) RegisterAVS(ctx sdk.Context, m types.MsgRegisterAVS) error {
+	if k.HasAVSContract(ctx, m.GetContractBin()) {
+		return types.NewAVSContractAlreadyExistsError(hex.EncodeToString(m.GetContractBin()))
 	}
 
 	id, err := k.nextAVSID.Next(ctx)
@@ -126,16 +126,22 @@ func (k *Keeper) RegisterAVS(ctx sdk.Context, cp types.MsgRegisterAVS) error {
 		return err
 	}
 
-	// TODO
-	//StoreCode
-	//InstantiateContract
+	storeCodeResponse, err := k.wasmMsgServer.StoreCode(ctx, &wasmtypes.MsgStoreCode{
+		Sender:       m.Sender,
+		WASMByteCode: m.ContractBin,
+	})
+	instantiateContractResponse, err := k.wasmMsgServer.InstantiateContract(ctx, &wasmtypes.MsgInstantiateContract{
+		Sender: m.Sender,
+		Admin:  m.Sender,
+		CodeID: storeCodeResponse.CodeID,
+	})
 
 	state := types.AVS{
-		ContractAddress:    "0x000", // TODO: use actual contract address
+		ContractAddress:    instantiateContractResponse.Address,
 		Id:                 id,
-		SidecarDockerImage: cp.SidecarDockerImage,
+		SidecarDockerImage: m.SidecarDockerImage,
 	}
-	return k.avsMap.Set(ctx, hex.EncodeToString(crypto.Sha256(cp.GetContractBin())), state)
+	return k.avsMap.Set(ctx, hex.EncodeToString(crypto.Sha256(m.GetContractBin())), state)
 }
 
 func (k *Keeper) GetIDForAVSContract(ctx sdk.Context, contractBytes []byte) (uint64, bool) {
@@ -170,4 +176,24 @@ func (k *Keeper) GetAVSByID(ctx sdk.Context, id uint64) (types.AVS, bool) {
 	}
 
 	return avs, true
+}
+
+func (k *Keeper) GetAllAVSIDs(ctx sdk.Context) ([]uint64, error) {
+	cps := make([]uint64, 0)
+
+	it, err := k.idIndex.Iterate(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer it.Close()
+
+	for ; it.Valid(); it.Next() {
+		keyPair, err := it.FullKey()
+		if err != nil {
+			return nil, err
+		}
+
+		cps = append(cps, keyPair.K1())
+	}
+	return cps, nil
 }
