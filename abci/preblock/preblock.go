@@ -138,7 +138,10 @@ func generateMsgsFromVoteExtensions(ctx sdk.Context, k abci.SLPPKeeper, ves []VE
 	// generate the messages
 	msgs := make([]sdk.Msg, 0, len(avsDataPerID))
 	for id, avsDataToAggregate := range avsDataPerID {
-		avs := k.GetAVSPerID(ctx, id)
+		avs, ok := k.GetAVSByID(ctx, id)
+		if !ok {
+			return nil, fmt.Errorf("avs with id %d not found", id)
+		}
 
 		payload, err := json.Marshal(abci.AggregationContractPayload{
 			Data: avsDataToAggregate,
