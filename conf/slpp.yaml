@@ -1,3 +1,0 @@
-oracle_clients:
-  - avs_id: 0
-    oracle_address: 0.0.0.0:8080
