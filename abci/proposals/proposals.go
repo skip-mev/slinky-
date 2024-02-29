@@ -9,6 +9,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+func NewProposalHandler(vs baseapp.ValidatorStore) ProposalHandler {
+	return ProposalHandler{
+		vs: vs,
+	}
+}
+
 // ProposalHandler handles Prepare / ProcessProposal invocations.
 type ProposalHandler struct {
 	vs baseapp.ValidatorStore
