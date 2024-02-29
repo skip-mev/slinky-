@@ -3,8 +3,8 @@ package keeper
 import (
 	"context"
 	"fmt"
-
 	"github.com/CosmWasm/wasmd/x/slpp/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // queryServer is the default implementation of the x/slpp QueryService.
@@ -23,9 +23,10 @@ func (q *queryServer) GetAVS(ctx context.Context, req *types.GetAVSRequest) (*ty
 		return nil, fmt.Errorf("request cannot be nil")
 	}
 
-	avs, err := q.keeper.GetAVS(ctx, req.Id)
-	if err != nil {
-		return nil, err
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	avs, ok := q.keeper.GetAVSByID(sdkCtx, req.Id)
+	if !ok {
+		return nil, fmt.Errorf("id not found")
 	}
 
 	return &types.GetAVSResponse{

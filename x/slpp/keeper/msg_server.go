@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/CosmWasm/wasmd/x/slpp/types"
 )
@@ -18,15 +19,14 @@ func NewMsgServer(k Keeper) types.MsgServer {
 	}
 }
 
-// RegisterAVS does something..
 func (m *msgServer) RegisterAVS(ctx context.Context, req *types.MsgRegisterAVS) (*types.MsgRegisterAVSResponse, error) {
 	// check the validity of the message
 	if req == nil {
 		return nil, fmt.Errorf("message cannot be empty")
 	}
 
-	// dennis does everything
-	id, err := m.keeper.RegisterAVS(ctx, req)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	id, err := m.keeper.RegisterAVS(sdkCtx, req)
 	if err != nil {
 		return nil, err
 	}
