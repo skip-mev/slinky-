@@ -1,0 +1,18 @@
+syntax = "proto3";
+package cosmwasm.slpp.v1;
+
+option go_package = "github.com/CosmWasm/wasmd/x/slpp/service";
+
+// OracleService defines the gRPC query service between the application, and each 
+// AVS's oracle implementation
+service OracleService {
+    rpc VoteExtensionData(VoteExtensionDataRequest) returns (VoteExtensionDataResponse) {}
+}
+
+// VoteExtensionDataRequest is the request type for the VoteExtensionData RPC
+message VoteExtensionDataRequest {}
+
+// VoteExtensionDataResponse is the response type for the VoteExtensionData RPC
+message VoteExtensionDataResponse {
+    bytes data = 1;
+}
