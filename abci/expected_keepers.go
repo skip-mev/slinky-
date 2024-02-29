@@ -10,5 +10,5 @@ type SLPPKeeper interface {
 	// GetAVSPerID returns the AVS for a given ID
 	GetAVSPerID(ctx sdk.Context, id uint64) slpptypes.AVS
 	// GetAllAVSes returns all AVSes
-	GetAllAVSes(ctx sdk.Context) ([]slpptypes.AVS, error)
+	GetAllAVSIDs(ctx sdk.Context) ([]uint64, error)
 }
