@@ -51,7 +51,6 @@ func (ph ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 				Txs: [][]byte{},
 			}, err
 		}
-		
 
 		ctx.Logger().Info(
 			"extended-commit prepared for proposal",
