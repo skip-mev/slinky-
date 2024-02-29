@@ -18,8 +18,8 @@ message AVS {
 
 // MsgRegisterAVS defines a message-type handled by the x/slpp module for ingressing a new AVS.
 message MsgRegisterAVS {
-	bytes contract_bin = 1;
-	string sidecar_docker_image = 2;
+  bytes contract_bin = 1;
+  string sidecar_docker_image = 2;
 }
 
 // MsgRegisterAVSResponse defines the Msg/RegisterAVS response
