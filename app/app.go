@@ -147,6 +147,8 @@ import (
 	// abci
 	"github.com/CosmWasm/wasmd/abci/proposals"
 	"github.com/CosmWasm/wasmd/abci/preblock"
+	ve "github.com/CosmWasm/wasmd/abci/vote_extensions"
+	veclient "github.com/CosmWasm/wasmd/abci/vote_extensions/client"
 )
 
 const appName = "WasmApp"
@@ -930,7 +932,12 @@ func NewWasmApp(
 	// preblock handlers
 	app.SetPreBlocker(preblock.PreBlocker(
 		app.SLPPKeeper,
-		app.WasmKeeper,
+		&app.WasmKeeper,
+	))
+	// vote-extensions
+	app.SetExtendVoteHandler(ve.NewExtendVoteHandler(
+		veclient.MultiOracleClientMock{},
+		app.SLPPKeeper,
 	))
 
 	// In v0.46, the SDK introduces _postHandlers_. PostHandlers are like
