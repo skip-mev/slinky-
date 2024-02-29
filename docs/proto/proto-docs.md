@@ -126,7 +126,7 @@ Query is the query service for the x/slpp module.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `GetAVS` | [GetAVSRequest](#cosmwasm.slpp.v1.GetAVSRequest) | [GetAVSResponse](#cosmwasm.slpp.v1.GetAVSResponse) |  | GET|/slpp/v1/get_avs|
+| `GetAVS` | [GetAVSRequest](#cosmwasm.slpp.v1.GetAVSRequest) | [GetAVSResponse](#cosmwasm.slpp.v1.GetAVSResponse) |  | GET|/slpp/v1/get_avs/{id}|
 
  <!-- end services -->
 

@@ -30,7 +30,7 @@ message MsgRegisterAVSResponse {
 // Query is the query service for the x/slpp module.
 service Query {
   rpc GetAVS(GetAVSRequest) returns (GetAVSResponse) {
-    option (google.api.http).get = "/slpp/v1/get_avs";
+    option (google.api.http).get = "/slpp/v1/get_avs/{id}";
   }
 }
 
