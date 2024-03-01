@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	privKey = "2ac963db261405f88ae77cf46b80df2ebef353642b912e998bf6811e0ec09c08"
+	privKey = "5d8ba67468a0f3a5a452c567163876d8d780b32b2f7944ca2a67128582454ff6"
 	binFile = "./bin"
 	accNum = 0
 	seq = 1
