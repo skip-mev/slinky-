@@ -21,6 +21,8 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"github.com/cometbft/cometbft/crypto"
+	"encoding/hex"
 )
 
 const DefaultServerShutdownTimeout = 3 * time.Second
@@ -169,10 +171,22 @@ func (os *OracleServer) VoteExtensionData(ctx context.Context, req *service.Vote
 		"found block",
 		zap.String("height", block.Number().String()),
 	)
+	txs := block.Transactions()
+	var txhashes []string
+	for i := range txs {
+		txhashes = append(txhashes, hex.EncodeToString(txs[i].Hash().Bytes()))
+	}
+
+	var msg []byte
+	for i := range txs {
+		msg = append(msg, txs[i].Hash().Bytes()...)
+	}
+	rootHash := crypto.Sha256(msg)
+
 
 	ve := VoteExtensionSchema{
 		Roots: map[string][]byte{
-			"1": block.ReceiptHash().Bytes(),
+			"1": rootHash,
 		},
 	}
 
