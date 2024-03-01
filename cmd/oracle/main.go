@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	oracle2 "github.com/CosmWasm/wasmd/service/servers/oracle"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"os"
 	"os/signal"
 	"strings"
@@ -50,7 +51,11 @@ func main() {
 	}
 
 	// create server
-	srv := oracle2.NewOracleServer(logger, databytes)
+	conn, err := ethclient.Dial("https://ethereum-rpc.publicnode.com")
+	if err != nil {
+		return
+	}
+	srv := oracle2.NewOracleServer(logger, databytes, conn)
 
 	// cancel oracle on interrupt or terminate
 	go func() {
