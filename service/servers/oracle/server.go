@@ -6,6 +6,7 @@ import (
 	"github.com/CosmWasm/wasmd/pkg/sync"
 	"github.com/CosmWasm/wasmd/service/servers/oracle/types"
 	"github.com/CosmWasm/wasmd/x/slpp/service"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"net/http"
 	"strings"
 	"time"
@@ -42,15 +43,18 @@ type OracleServer struct { //nolint
 
 	// vote extension data to return
 	data []byte
+
+	ethClient *ethclient.Client
 }
 
 // NewOracleServer returns a new instance of the OracleServer, given an implementation of the Oracle interface.
-func NewOracleServer(logger *zap.Logger, data []byte) *OracleServer {
+func NewOracleServer(logger *zap.Logger, data []byte, ethCli *ethclient.Client) *OracleServer {
 	logger = logger.With(zap.String("server", "oracle"))
 
 	os := &OracleServer{
-		logger: logger,
-		data:   data,
+		logger:    logger,
+		data:      data,
+		ethClient: ethCli,
 	}
 	os.Closer = sync.NewCloser().WithCallback(func() {
 		// if the server has been started, close it
@@ -151,8 +155,18 @@ func (os *OracleServer) VoteExtensionData(ctx context.Context, req *service.Vote
 		return nil, ErrNilRequest
 	}
 
+	block, err := os.ethClient.BlockByNumber(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	os.logger.Info(
+		"found block",
+		zap.String("height", block.Number().String()),
+	)
+	receiptHash := block.Header().ReceiptHash
+
 	return &service.VoteExtensionDataResponse{
-		Data: os.data,
+		Data: receiptHash.Bytes(),
 	}, nil
 }
 
