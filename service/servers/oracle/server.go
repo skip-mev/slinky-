@@ -2,14 +2,16 @@ package oracle
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/CosmWasm/wasmd/pkg/sync"
 	"github.com/CosmWasm/wasmd/service/servers/oracle/types"
 	"github.com/CosmWasm/wasmd/x/slpp/service"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"net/http"
-	"strings"
-	"time"
 
 	gateway "github.com/cosmos/gogogateway"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -147,6 +149,10 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 	return eg.Wait()
 }
 
+type VoteExtensionSchema struct {
+	Roots map[string][]byte `json:"roots"`
+}
+
 // Prices calls the underlying oracle's implementation of GetPrices. It defers to the ctx in the request, and errors if the context is cancelled
 // for any reason, or if the oracle errors.
 func (os *OracleServer) VoteExtensionData(ctx context.Context, req *service.VoteExtensionDataRequest) (*service.VoteExtensionDataResponse, error) {
@@ -163,10 +169,25 @@ func (os *OracleServer) VoteExtensionData(ctx context.Context, req *service.Vote
 		"found block",
 		zap.String("height", block.Number().String()),
 	)
-	receiptHash := block.Header().ReceiptHash
+
+	ve := VoteExtensionSchema{
+		Roots: map[string][]byte{
+			"1": block.ReceiptHash().Bytes(),
+		},
+	}
+
+	os.logger.Info(
+		"returning vote extension data",
+		zap.Any("data", ve),
+	)
+
+	bz, err := json.Marshal(ve)
+	if err != nil {
+		return nil, err
+	}
 
 	return &service.VoteExtensionDataResponse{
-		Data: receiptHash.Bytes(),
+		Data: bz,
 	}, nil
 }
 

@@ -205,6 +205,7 @@ build-app: build
 	./build/wasmd init validator --chain-id skip-1 --home $(HOMEDIR)
 	./build/wasmd keys add validator --home $(HOMEDIR) --keyring-backend test
 	./build/wasmd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
+	./build/wasmd genesis add-genesis-account wasm16rm88ny0cn3cws0x0vz5z0j4g5wzyswqqyj2ye 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
 	./build/wasmd genesis gentx validator 1000000000stake --chain-id skip-1 --home $(HOMEDIR) --keyring-backend test
 	./build/wasmd genesis collect-gentxs --home $(HOMEDIR)
 	jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
