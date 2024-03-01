@@ -7,9 +7,7 @@ LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 BINDIR ?= $(GOPATH)/bin
 SIMAPP = ./app
-HOMEDIR = $(shell pwd)/.wasmd
-GENESIS = $(HOMEDIR)/config/genesis.json
-GENESIS_TMP = $(HOMEDIR)/config/genesis_tmp.json
+
 # for dockerized protobuf tools
 DOCKER := $(shell which docker)
 BUF_IMAGE=bufbuild/buf@sha256:3cb1f8a4b48bd5ad8f09168f10f607ddc318af202f5c057d52a45216793d85e5 #v1.4.0
@@ -200,22 +198,6 @@ proto-lint:
 
 proto-check-breaking:
 	@$(DOCKER_BUF) breaking --against $(HTTPS_GIT)#branch=main
-
-build-app: build
-	./build/wasmd init validator --chain-id skip-1 --home $(HOMEDIR)
-	./build/wasmd keys add validator --home $(HOMEDIR) --keyring-backend test
-	./build/wasmd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
-	./build/wasmd genesis add-genesis-account wasm16rm88ny0cn3cws0x0vz5z0j4g5wzyswqqyj2ye 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
-	./build/wasmd genesis gentx validator 1000000000stake --chain-id skip-1 --home $(HOMEDIR) --keyring-backend test
-	./build/wasmd genesis collect-gentxs --home $(HOMEDIR)
-	jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
-
-start-app:
-	./build/wasmd start --home $(HOMEDIR)
-
-start-oracle:
-	@go run ./cmd/oracle/main.go -datahex 7b22726f6f7473223a7b2231223a22756d6f747465314633436c6b6b56412b777879632b5a716d41486b616f524e7269477752536942766d31383d222c2232223a22796d6f747465314633436c6b6b56412b777879632b5a716d41486b616f524e7269477752536942766d31383d227d7d
-
 
 .PHONY: all install install-debug \
 	go-mod-cache draw-deps clean build format \

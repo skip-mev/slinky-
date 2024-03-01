@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"context"
 
 	"github.com/CosmWasm/wasmd/x/slpp/types"
@@ -118,7 +117,6 @@ func (k *Keeper) NextAVSID(ctx sdk.Context) (uint64, error) {
 }
 
 func (k *Keeper) RegisterAVS(ctx sdk.Context, m *types.MsgRegisterAVS) (uint64, error) {
-	ctx.Logger().Info("Registering AVS contract")
 	if k.HasAVSContract(ctx, m.GetContractBin()) {
 		return 0, types.NewAVSContractAlreadyExistsError(hex.EncodeToString(m.GetContractBin()))
 	}
@@ -128,29 +126,15 @@ func (k *Keeper) RegisterAVS(ctx sdk.Context, m *types.MsgRegisterAVS) (uint64, 
 		return 0, err
 	}
 
-	ctx.Logger().Info("Storing AVS contract")
-
 	storeCodeResponse, err := k.wasmMsgServer.StoreCode(ctx, &wasmtypes.MsgStoreCode{
 		Sender:       m.Sender,
 		WASMByteCode: m.ContractBin,
 	})
-	if err != nil {
-		return 0, err
-	}
-
-	ctx.Logger().Info("Instantiating AVS contract")
-
 	instantiateContractResponse, err := k.wasmMsgServer.InstantiateContract(ctx, &wasmtypes.MsgInstantiateContract{
 		Sender: m.Sender,
 		CodeID: storeCodeResponse.CodeID,
 		Msg:    m.InstantiateMsg,
-		Label: fmt.Sprintf("AVS-%d", id),
 	})
-	if err != nil {
-		return 0, err
-	}
-
-	ctx.Logger().Info("Storing AVS contract state")
 
 	state := types.AVS{
 		ContractAddress:    instantiateContractResponse.Address,

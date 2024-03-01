@@ -2,13 +2,10 @@ syntax = "proto3";
 package cosmwasm.slpp.v1;
 
 import "google/api/annotations.proto";
-import "amino/amino.proto";
-import "cosmos/msg/v1/msg.proto";
 
 option go_package = "github.com/CosmWasm/wasmd/x/slpp/types";
 
 service Msg {
-  option (cosmos.msg.v1.service) = true;
     rpc RegisterAVS(MsgRegisterAVS) returns (MsgRegisterAVSResponse) {}
 }
 
@@ -20,10 +17,7 @@ message AVS {
 }
 
 // MsgRegisterAVS defines a message-type handled by the x/slpp module for ingressing a new AVS.
-message MsgRegisterAVS  {
-  option (amino.name) = "slpp/MsgRegisterAVS";
-  option (cosmos.msg.v1.signer) = "sender";
-  
+message MsgRegisterAVS {
   bytes contract_bin = 1;
   string sidecar_docker_image = 2;
   string sender = 3;

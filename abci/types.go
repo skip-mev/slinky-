@@ -10,7 +10,7 @@ type AggregationContractPayload struct {
 }
 
 type DataWithVotingPower struct {
-	Vote        []byte `json:"vote"`
+	Data        []byte `json:"data"`
 	VotingPower uint64  `json:"ve_power"`
 }
 

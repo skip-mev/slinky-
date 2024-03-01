@@ -27,7 +27,7 @@ func GetAVSCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "avs [id]",
 		Short: "Query for the price of a specified currency-pair",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// get context
 			clientCtx, err := client.GetClientQueryContext(cmd)

@@ -1,11 +1,8 @@
 package app
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	voteextensions "github.com/CosmWasm/wasmd/abci/vote_extensions"
-	"github.com/CosmWasm/wasmd/service/clients/oracle"
 	"io"
 	"os"
 	"path/filepath"
@@ -135,19 +132,9 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/CosmWasm/wasmd/x/slpp"
 	"github.com/CosmWasm/wasmd/x/wasm"
-
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-
-	slppkeeper "github.com/CosmWasm/wasmd/x/slpp/keeper"
-	slpptypes "github.com/CosmWasm/wasmd/x/slpp/types"
-
-	// abci
-	"github.com/CosmWasm/wasmd/abci/proposals"
-	"github.com/CosmWasm/wasmd/abci/preblock"
-	ve "github.com/CosmWasm/wasmd/abci/vote_extensions"
 )
 
 const appName = "WasmApp"
@@ -193,7 +180,6 @@ var maccPerms = map[string][]string{
 	ibcfeetypes.ModuleName:      nil,
 	icatypes.ModuleName:         nil,
 	wasmtypes.ModuleName:        {authtypes.Burner},
-	slpptypes.ModuleName:        nil,
 }
 
 var (
@@ -248,8 +234,6 @@ type WasmApp struct {
 	ScopedIBCFeeKeeper        capabilitykeeper.ScopedKeeper
 	ScopedWasmKeeper          capabilitykeeper.ScopedKeeper
 
-	SLPPKeeper *slppkeeper.Keeper
-
 	// the module manager
 	ModuleManager      *module.Manager
 	BasicModuleManager module.BasicManager
@@ -260,8 +244,6 @@ type WasmApp struct {
 	// module configurator
 	configurator module.Configurator
 	once         sync.Once
-
-	multiOracleClient voteextensions.MultiOracleClient
 }
 
 // NewWasmApp returns a reference to an initialized WasmApp.
@@ -343,7 +325,7 @@ func NewWasmApp(
 		// non sdk store keys
 		capabilitytypes.StoreKey, ibcexported.StoreKey, ibctransfertypes.StoreKey, ibcfeetypes.StoreKey,
 		wasmtypes.StoreKey, icahosttypes.StoreKey,
-		icacontrollertypes.StoreKey, slpptypes.StoreKey,
+		icacontrollertypes.StoreKey,
 	)
 
 	tkeys := storetypes.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -363,19 +345,6 @@ func NewWasmApp(
 		keys:              keys,
 		tkeys:             tkeys,
 		memKeys:           memKeys,
-	}
-
-	app.multiOracleClient, err = oracle.NewMultiOracleClientFromConfig(
-		context.Background(),
-		[]oracle.OracleClientConfig{
-			{
-				AVSID:         0,
-				OracleAddress: "0.0.0.0:8080",
-			},
-		},
-	)
-	if err != nil {
-		panic(err)
 	}
 
 	app.ParamsKeeper = initParamsKeeper(
@@ -681,14 +650,7 @@ func NewWasmApp(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		wasmOpts...,
 	)
-	sk := slppkeeper.NewKeeper(
-		runtime.NewKVStoreService(keys[slpptypes.StoreKey]),
-		appCodec,
-		wasmkeeper.NewMsgServerImpl(&app.WasmKeeper),
-	)
 
-	app.SLPPKeeper = &sk
-	
 	// Create Transfer Stack
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
@@ -765,7 +727,6 @@ func NewWasmApp(
 		ibctm.AppModule{},
 		// sdk
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)), // always be last to make sure that it checks for all invariants and not only part of them
-		slpp.NewAppModule(app.SLPPKeeper),
 	)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
@@ -809,7 +770,6 @@ func NewWasmApp(
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		wasmtypes.ModuleName,
-		slpptypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -826,7 +786,6 @@ func NewWasmApp(
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		wasmtypes.ModuleName,
-		slpptypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -852,7 +811,6 @@ func NewWasmApp(
 		ibcfeetypes.ModuleName,
 		// wasm after ibc transfer
 		wasmtypes.ModuleName,
-		slpptypes.ModuleName,
 	}
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
 	app.ModuleManager.SetOrderExportGenesis(genesisModuleOrder...)
@@ -922,22 +880,6 @@ func NewWasmApp(
 	app.ScopedWasmKeeper = scopedWasmKeeper
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
 	app.ScopedICAControllerKeeper = scopedICAControllerKeeper
-
-	// configure ABCI handlers
-	// proposal handlers
-	ph := proposals.NewProposalHandler(app.StakingKeeper)
-	app.SetPrepareProposal(ph.PrepareProposalHandler())
-	app.SetProcessProposal(ph.ProcessProposalHandler())
-	// preblock handlers
-	app.SetPreBlocker(preblock.PreBlocker(
-		app.SLPPKeeper,
-		&app.WasmKeeper,
-	))
-	// vote-extensions
-	app.SetExtendVoteHandler(ve.NewExtendVoteHandler(
-		app.multiOracleClient,
-		app.SLPPKeeper,
-	))
 
 	// In v0.46, the SDK introduces _postHandlers_. PostHandlers are like
 	// antehandlers, but are run _after_ the `runMsgs` execution. They are also

@@ -46,7 +46,3 @@ dependency-graph.png
 *.out
 *.synctex.gz
 contract_tests/*
-
-.wasmd
-
-go.work*
