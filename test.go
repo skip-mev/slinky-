@@ -1,16 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"context"
-	"encoding/hex"
 	"encoding/base64"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 
 	slpptypes "github.com/CosmWasm/wasmd/x/slpp/types"
+	cmthttp "github.com/cometbft/cometbft/rpc/client/http"
 	clientTx "github.com/cosmos/cosmos-sdk/client/tx"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -20,11 +22,10 @@ import (
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	cmthttp "github.com/cometbft/cometbft/rpc/client/http"
 )
 
 const (
-	privKey = "6c5b738da068835ebc9d625424307108ccdb69d96ce23912c9cfb0153a0a333d"
+	privKey = "2ac963db261405f88ae77cf46b80df2ebef353642b912e998bf6811e0ec09c08"
 	binFile = "./bin"
 	accNum = 0
 	seq = 1
@@ -35,6 +36,21 @@ func init() {
 }
 
 func main() {
+	type Vote struct {
+		Root map[string][]byte `json:"roots"`
+	}
+	m := Vote{
+		map[string][]byte{
+			"foo": []byte("bar"),
+		},
+	}
+
+	bz, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(hex.EncodeToString(bz))
+
 	pk, err := hex.DecodeString(privKey)
 	if err != nil {
 		panic(err)
@@ -47,8 +63,7 @@ func main() {
 	}
 
 	// base64 decode bytecode
-	fmt.Println(string(bin))
-	binCode, err := base64.RawStdEncoding.DecodeString(string(bin))
+	binCode, err := base64.StdEncoding.DecodeString(string(bin))
 	if err != nil {
 		panic(err)
 	}
