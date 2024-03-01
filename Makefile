@@ -212,6 +212,9 @@ build-app:
 start-app:
 	./build/wasmd start --home $(HOMEDIR)
 
+start-oracle:
+	@go run ./cmd/oracle/main.go -datahex 0x1234
+
 .PHONY: all install install-debug \
 	go-mod-cache draw-deps clean build format \
 	test test-all test-build test-cover test-unit test-race \

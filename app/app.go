@@ -148,7 +148,6 @@ import (
 	"github.com/CosmWasm/wasmd/abci/proposals"
 	"github.com/CosmWasm/wasmd/abci/preblock"
 	ve "github.com/CosmWasm/wasmd/abci/vote_extensions"
-	veclient "github.com/CosmWasm/wasmd/abci/vote_extensions/client"
 )
 
 const appName = "WasmApp"
@@ -936,7 +935,7 @@ func NewWasmApp(
 	))
 	// vote-extensions
 	app.SetExtendVoteHandler(ve.NewExtendVoteHandler(
-		veclient.MultiOracleClientMock{},
+		app.multiOracleClient,
 		app.SLPPKeeper,
 	))
 

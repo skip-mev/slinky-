@@ -131,7 +131,7 @@ func generateMsgsFromVoteExtensions(ctx sdk.Context, k abci.SLPPKeeper, ves []VE
 			}
 
 			avsDataPerID[avsId] = append(avsDataPerID[avsId], abci.DataWithVotingPower{
-				Data: avsData,
+				Vote: avsData,
 				VotingPower: ve.VotingPower,
 			})
 		}
@@ -148,6 +148,7 @@ func generateMsgsFromVoteExtensions(ctx sdk.Context, k abci.SLPPKeeper, ves []VE
 		payload, err := json.Marshal(abci.AggregationContractPayload{
 			Data: avsDataToAggregate,
 		})
+		ctx.Logger().Info("payload", "payload", string(payload))
 		if err != nil {
 			return nil, err
 		}
