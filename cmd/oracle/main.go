@@ -9,7 +9,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	_ "net/http/pprof" //nolint: gosec
@@ -44,11 +43,13 @@ func main() {
 		return
 	}
 
-	databytes, err := hex.DecodeString(strings.TrimLeft(*dataHex, "0x"))
+	databytes, err := hex.DecodeString(*dataHex)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to decode vote extension data: %s\n", err.Error())
 		return
 	}
+
+	fmt.Println("databytes: ", string(databytes))
 
 	// create server
 	conn, err := ethclient.Dial("https://ethereum-rpc.publicnode.com")

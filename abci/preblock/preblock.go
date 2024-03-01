@@ -145,6 +145,7 @@ func generateMsgsFromVoteExtensions(ctx sdk.Context, k abci.SLPPKeeper, ves []VE
 			return nil, fmt.Errorf("avs with id %d not found", id)
 		}
 
+		ctx.Logger().Info("avsDataToAggregate", "avsDataToAggregate", avsDataToAggregate)
 		payload, err := json.Marshal(abci.AggregationContractPayload{
 			Data: avsDataToAggregate,
 		})
@@ -152,7 +153,7 @@ func generateMsgsFromVoteExtensions(ctx sdk.Context, k abci.SLPPKeeper, ves []VE
 		if err != nil {
 			return nil, err
 		}
-		
+
 		msgs = append(msgs, &wasmtypes.MsgSudoContract{
 			Contract: avs.ContractAddress,
 			Msg: payload,
