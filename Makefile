@@ -201,7 +201,7 @@ proto-lint:
 proto-check-breaking:
 	@$(DOCKER_BUF) breaking --against $(HTTPS_GIT)#branch=main
 
-build-app:
+build-app: build
 	./build/wasmd init validator --chain-id skip-1 --home $(HOMEDIR)
 	./build/wasmd keys add validator --home $(HOMEDIR) --keyring-backend test
 	./build/wasmd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
@@ -209,11 +209,12 @@ build-app:
 	./build/wasmd genesis collect-gentxs --home $(HOMEDIR)
 		jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 
-start-app:
+start-app: build-app
 	./build/wasmd start --home $(HOMEDIR)
 
 start-oracle:
 	@go run ./cmd/oracle/main.go -datahex 01000000000000000100000000000000312c00000000000000756d6f747465314633436c6b6b56412b777879632b5a716d41486b616f524e7269477752536942766d31383d
+
 
 .PHONY: all install install-debug \
 	go-mod-cache draw-deps clean build format \
