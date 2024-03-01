@@ -36,11 +36,12 @@ func NewExtendVoteHandler(oc MultiOracleClient, k abci.SLPPKeeper) sdk.ExtendVot
 
 		for _, avs := range avses {
 			veData, err := oc.VoteExtensionData(ctx, avs, &service.VoteExtensionDataRequest{})
-			if err != nil {
+			if err != nil || veData == nil {
 				ctx.Logger().Error(
 					"failed to get vote extension data",
 					"err", err,
 				)
+				continue
 			}
 
 			ext.AvsData[avs] = veData.Data
