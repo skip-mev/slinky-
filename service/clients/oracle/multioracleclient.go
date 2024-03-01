@@ -46,3 +46,4 @@ func (m *multiOracleClientImpl) VoteExtensionData(ctx context.Context, avsID uin
 	}
 	return oracleClient.VoteExtensionData(ctx, req)
 }
+
