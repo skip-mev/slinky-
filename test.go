@@ -27,8 +27,8 @@ import (
 const (
 	privKey = "35c5eda475033fc7dd17fe65efb3b05d14335ee988127d68aa8a1dbb63d3ec5e"
 	binFile = "./bin"
-	accNum = 0
-	seq = 1
+	accNum = 1
+	seq = 0
 )
 
 func init() {
