@@ -6,6 +6,7 @@ import (
 	"github.com/CosmWasm/wasmd/pkg/sync"
 	"github.com/CosmWasm/wasmd/service/servers/oracle/types"
 	"github.com/CosmWasm/wasmd/x/slpp/service"
+	"github.com/cometbft/cometbft/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"net/http"
 	"strings"
@@ -155,18 +156,20 @@ func (os *OracleServer) VoteExtensionData(ctx context.Context, req *service.Vote
 		return nil, ErrNilRequest
 	}
 
-	block, err := os.ethClient.BlockByNumber(ctx, nil)
+	block, err := os.ethClient.BlockByNumber(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}
-	os.logger.Info(
-		"found block",
-		zap.String("height", block.Number().String()),
-	)
-	receiptHash := block.Header().ReceiptHash
+	os.logger.Info("found block with height", zap.String("host", block.Number().String()))
+	txs := block.Transactions()
+
+	var msg []byte
+	for i := range txs {
+		msg = append(msg, txs[i].Hash().Bytes()...)
+	}
 
 	return &service.VoteExtensionDataResponse{
-		Data: receiptHash.Bytes(),
+		Data: crypto.Sha256(msg),
 	}, nil
 }
 
